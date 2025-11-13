@@ -1,8 +1,9 @@
 import pygame
-from config import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, BACKGROUND_COLOR, GROUND_COLOR, GROUND_Y, INITIAL_GAME_SPEED, PLAYER_X, PLAYER_GROUND_Y, SCORE_INCREMENT, SPEED_INCREMENT, MAX_GAME_SPEED
+from config import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, DAY_BACKGROUND_COLOR, NIGHT_BACKGROUND_COLOR, GROUND_COLOR, GROUND_Y, INITIAL_GAME_SPEED, PLAYER_X, PLAYER_GROUND_Y, SCORE_INCREMENT, SPEED_INCREMENT, MAX_GAME_SPEED, DAY_NIGHT_SWITCH_SCORE
 from player import Player 
 from obstacle_manager import ObstacleManager 
 from score_manager import ScoreManager
+from asset_manager import AssetManager # AssetManager 임포트
 
 class Game:
     """
@@ -21,12 +22,30 @@ class Game:
         self._running = False
         self._game_over = False
         
+        # AssetManager 초기화
+        self._asset_manager = AssetManager()
+        self._load_assets() # 에셋 로드
+        
         # 게임 객체들 (의존성 주입 가능)
-        self._player = Player(PLAYER_X, PLAYER_GROUND_Y) 
-        self._obstacle_manager = ObstacleManager() 
-        self._score_manager = ScoreManager() # ScoreManager 인스턴스화
+        self._player = Player(PLAYER_X, PLAYER_GROUND_Y, self._asset_manager) # Player에 AssetManager 전달
+        self._obstacle_manager = ObstacleManager(self._asset_manager) # ObstacleManager에 AssetManager 전달
+        self._score_manager = ScoreManager()
         self._game_speed = INITIAL_GAME_SPEED
+        self._is_day = True # 낮/밤 상태 초기화
     
+    def _load_assets(self):
+        """게임에 필요한 에셋 로드"""
+        # 플레이어 스프라이트 (임시 플레이스홀더)
+        self._asset_manager.load_image("pug_run_1", "pug_run_1.png")
+        self._asset_manager.load_image("pug_run_2", "pug_run_2.png")
+        self._asset_manager.load_image("pug_jump", "pug_jump.png")
+        self._asset_manager.load_image("pug_duck", "pug_duck.png")
+        
+        # 장애물 스프라이트 (임시 플레이스홀더)
+        self._asset_manager.load_image("hydrant", "hydrant.png")
+        self._asset_manager.load_image("stump", "stump.png")
+        self._asset_manager.load_image("bird", "bird.png")
+
     # Public 인터페이스
     def run(self):
         """메인 게임 루프 (외부 호출용)"""
@@ -65,18 +84,20 @@ class Game:
             self._obstacle_manager.update(self._game_speed)
             self._check_collision()
             self._update_score() 
-            self._increase_difficulty() # 난이도 증가 로직 호출
+            self._increase_difficulty() 
+            self._check_day_night_cycle() 
     
     def _draw(self):
         """화면 렌더링 (캡슐화)"""
-        self._screen.fill(BACKGROUND_COLOR)
+        current_bg_color = DAY_BACKGROUND_COLOR if self._is_day else NIGHT_BACKGROUND_COLOR
+        self._screen.fill(current_bg_color)
         
         # 바닥 라인 렌더링
         pygame.draw.line(self._screen, GROUND_COLOR, (0, GROUND_Y), (SCREEN_WIDTH, GROUND_Y), 2)
 
         self._player.draw(self._screen)
         self._obstacle_manager.draw(self._screen)
-        self._draw_score() # 점수 표시 호출
+        self._draw_score() 
 
         if self._game_over:
             self._draw_game_over_screen()
@@ -96,6 +117,14 @@ class Game:
         """난이도 증가 (내부 로직)"""
         if self._game_speed < MAX_GAME_SPEED:
             self._game_speed += SPEED_INCREMENT
+    
+    def _check_day_night_cycle(self):
+        """낮/밤 전환 로직"""
+        if self._score_manager.score > 0 and \
+           (self._score_manager.score // DAY_NIGHT_SWITCH_SCORE) % 2 == 1:
+            self._is_day = False 
+        else:
+            self._is_day = True 
     
     def _draw_score(self):
         """점수 표시"""
@@ -123,4 +152,5 @@ class Game:
         self._game_speed = INITIAL_GAME_SPEED
         self._player.reset()
         self._obstacle_manager.clear()
-        self._score_manager.reset() # ScoreManager 리셋 호출
+        self._score_manager.reset() 
+        self._is_day = True

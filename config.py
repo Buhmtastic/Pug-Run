@@ -2,7 +2,9 @@
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 400
 FPS = 60
-BACKGROUND_COLOR = (135, 206, 235)  # 하늘색 (공원 테마)
+BACKGROUND_COLOR = (135, 206, 235)  # 하늘색 (공원 테마) - 초기값
+DAY_BACKGROUND_COLOR = (247, 247, 247) # 밝은 회색
+NIGHT_BACKGROUND_COLOR = (83, 83, 83) # 어두운 회색
 GROUND_COLOR = (34, 139, 34)        # 잔디 녹색
 GROUND_Y = 350                      # 지면 높이 (수정됨)
 

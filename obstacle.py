@@ -12,10 +12,11 @@ class Obstacle(GameObject):
     - 화면 밖 판정
     """
     
-    def __init__(self, x, y, width, height, obstacle_type):
+    def __init__(self, x, y, width, height, asset_manager, image_name):
         super().__init__(x, y, width, height)
-        self._obstacle_type = obstacle_type
-        self._speed = 0 # 장애물 이동 속도는 Game 클래스에서 주입받음
+        self._asset_manager = asset_manager
+        self._image_name = image_name
+        self._speed = 0
     
     def update(self, speed, *args, **kwargs): # GameObject의 update 시그니처에 맞춤
         """장애물 이동"""
@@ -26,42 +27,30 @@ class Obstacle(GameObject):
         """화면 밖 판정"""
         return self.x + self.width < 0
     
-    @abstractmethod
     def draw(self, screen):
-        """렌더링 (자식 클래스에서 구현)"""
-        pass
+        """스프라이트 렌더링"""
+        image = self._asset_manager.get_image(self._image_name)
+        if image:
+            screen.blit(image, self.get_rect())
+        else: # 이미지가 없을 경우 fallback
+            pygame.draw.rect(screen, (255, 0, 255), self.get_rect()) # 보라색으로 표시
 
 class Hydrant(Obstacle):
     """소화전 장애물"""
     
-    def __init__(self, x):
+    def __init__(self, x, asset_manager):
         super().__init__(x, PLAYER_GROUND_Y - HYDRANT_HEIGHT, 
-                        HYDRANT_WIDTH, HYDRANT_HEIGHT, 'hydrant')
-    
-    def draw(self, screen):
-        """소화전 렌더링"""
-        rect = self.get_rect()
-        pygame.draw.rect(screen, HYDRANT_COLOR, rect)
+                        HYDRANT_WIDTH, HYDRANT_HEIGHT, asset_manager, "hydrant")
 
 class Stump(Obstacle):
     """나무 그루터기 장애물"""
     
-    def __init__(self, x):
+    def __init__(self, x, asset_manager):
         super().__init__(x, PLAYER_GROUND_Y - STUMP_HEIGHT,
-                        STUMP_WIDTH, STUMP_HEIGHT, 'stump')
-    
-    def draw(self, screen):
-        """나무 렌더링"""
-        rect = self.get_rect()
-        pygame.draw.rect(screen, STUMP_COLOR, rect)
+                        STUMP_WIDTH, STUMP_HEIGHT, asset_manager, "stump")
 
 class Bird(Obstacle):
     """새 장애물 (공중)"""
     
-    def __init__(self, x, y_pos):
-        super().__init__(x, y_pos, BIRD_WIDTH, BIRD_HEIGHT, 'bird')
-    
-    def draw(self, screen):
-        """새 렌더링"""
-        rect = self.get_rect()
-        pygame.draw.ellipse(screen, (128, 128, 128), rect) # 회색 타원으로 임시 렌더링
+    def __init__(self, x, y_pos, asset_manager):
+        super().__init__(x, y_pos, BIRD_WIDTH, BIRD_HEIGHT, asset_manager, "bird")
