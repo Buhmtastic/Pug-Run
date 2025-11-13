@@ -17,6 +17,8 @@ PLAYER_JUMP_VELOCITY = -13       # 점프 초기 속도 (퍼그는 약간 낮게
 PLAYER_GRAVITY = 0.8             # 중력 가속도
 PLAYER_DUCK_HEIGHT = 20          # 숙일 때 높이
 PLAYER_COLOR = (245, 222, 179)   # 연한 갈색 (퍼그 색상)
+PUG_RUN_2_COLOR = (210, 180, 140) # 퍼그 달리기 애니메이션 2번째 프레임 색상
+PUG_JUMP_COLOR = (173, 216, 230)  # 퍼그 점프 색상 (하늘색)
 
 # --- 게임 설정 ---
 INITIAL_GAME_SPEED = 6           # 초기 속도
@@ -53,4 +55,5 @@ STUMP_COLOR = (139, 69, 19)      # 갈색
 # 새/나비 (공중 장애물)
 BIRD_WIDTH = 35
 BIRD_HEIGHT = 25
+BIRD_COLOR = (128, 128, 128)     # 회색
 BIRD_Y_POSITIONS = [260, 280, 300]  # 새 가능 높이
