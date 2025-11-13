@@ -351,8 +351,8 @@ MIT License - see [LICENSE](LICENSE) file
 ## 📞 Contact
 
 **Portfolio**: [your-portfolio.com](https://your-portfolio.com)  
-**LinkedIn**: [Your Name](https://linkedin.com/in/yourname)  
-**Email**: your.email@example.com
+**LinkedIn**: [Sangbuhm Hahn](https://www.linkedin.com/in/buhmtastic/)  
+**Email**: hahnsb202@sogang.ac.kr
 
 ---
 
