@@ -1,9 +1,10 @@
 import pygame
-from config import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, DAY_BACKGROUND_COLOR, NIGHT_BACKGROUND_COLOR, GROUND_COLOR, GROUND_Y, INITIAL_GAME_SPEED, PLAYER_X, PLAYER_GROUND_Y, SCORE_INCREMENT, SPEED_INCREMENT, MAX_GAME_SPEED, DAY_NIGHT_SWITCH_SCORE
+from config import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, DAY_BACKGROUND_COLOR, NIGHT_BACKGROUND_COLOR, GROUND_COLOR, GROUND_Y, INITIAL_GAME_SPEED, PLAYER_X, PLAYER_GROUND_Y, SCORE_INCREMENT, SPEED_INCREMENT, MAX_GAME_SPEED, DAY_NIGHT_SWITCH_SCORE, \
+    SCORE_TEXT_SIZE, GAME_OVER_TEXT_SIZE, RESTART_TEXT_SIZE, SCORE_POS_X_OFFSET, SCORE_POS_Y_SCORE, SCORE_POS_Y_HIGH_SCORE, GAME_OVER_POS_Y_OFFSET, RESTART_POS_Y_OFFSET 
 from player import Player 
 from obstacle_manager import ObstacleManager 
 from score_manager import ScoreManager
-from asset_manager import AssetManager # AssetManager 임포트
+from asset_manager import AssetManager 
 
 class Game:
     """
@@ -26,12 +27,17 @@ class Game:
         self._asset_manager = AssetManager()
         self._load_assets() # 에셋 로드
         
+        # 폰트 로드 (한 번만)
+        self._score_font = pygame.font.Font(None, SCORE_TEXT_SIZE)
+        self._game_over_font = pygame.font.Font(None, GAME_OVER_TEXT_SIZE)
+        self._restart_font = pygame.font.Font(None, RESTART_TEXT_SIZE)
+        
         # 게임 객체들 (의존성 주입 가능)
-        self._player = Player(PLAYER_X, PLAYER_GROUND_Y, self._asset_manager) # Player에 AssetManager 전달
-        self._obstacle_manager = ObstacleManager(self._asset_manager) # ObstacleManager에 AssetManager 전달
-        self._score_manager = ScoreManager()
+        self._player = Player(PLAYER_X, PLAYER_GROUND_Y, self._asset_manager) 
+        self._obstacle_manager = ObstacleManager(self._asset_manager) 
+        self._score_manager = ScoreManager() 
         self._game_speed = INITIAL_GAME_SPEED
-        self._is_day = True # 낮/밤 상태 초기화
+        self._is_day = True 
     
     def _load_assets(self):
         """게임에 필요한 에셋 로드"""
@@ -128,22 +134,19 @@ class Game:
     
     def _draw_score(self):
         """점수 표시"""
-        font = pygame.font.Font(None, 30)
-        score_text = font.render(f"Score: {self._score_manager.score}", True, (0, 0, 0))
-        high_score_text = font.render(f"High Score: {self._score_manager.high_score}", True, (0, 0, 0))
-        self._screen.blit(score_text, (SCREEN_WIDTH - score_text.get_width() - 10, 10))
-        self._screen.blit(high_score_text, (SCREEN_WIDTH - high_score_text.get_width() - 10, 40))
+        score_text = self._score_font.render(f"Score: {self._score_manager.score}", True, (0, 0, 0))
+        high_score_text = self._score_font.render(f"High Score: {self._score_manager.high_score}", True, (0, 0, 0))
+        self._screen.blit(score_text, (SCREEN_WIDTH - score_text.get_width() - SCORE_POS_X_OFFSET, SCORE_POS_Y_SCORE))
+        self._screen.blit(high_score_text, (SCREEN_WIDTH - high_score_text.get_width() - SCORE_POS_X_OFFSET, SCORE_POS_Y_HIGH_SCORE))
     
     def _draw_game_over_screen(self):
         """게임 오버 화면 렌더링"""
-        font = pygame.font.Font(None, 50)
-        text = font.render("Game Over!", True, (0, 0, 0))
-        text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 20))
+        text = self._game_over_font.render("Game Over!", True, (0, 0, 0))
+        text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + GAME_OVER_POS_Y_OFFSET))
         self._screen.blit(text, text_rect)
 
-        restart_font = pygame.font.Font(None, 30)
-        restart_text = restart_font.render("Press SPACE to Restart", True, (0, 0, 0))
-        restart_text_rect = restart_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 30))
+        restart_text = self._restart_font.render("Press SPACE to Restart", True, (0, 0, 0))
+        restart_text_rect = restart_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + RESTART_POS_Y_OFFSET))
         self._screen.blit(restart_text, restart_text_rect)
     
     def reset(self):

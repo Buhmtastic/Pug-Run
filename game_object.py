@@ -10,10 +10,42 @@ class GameObject(ABC):
     """
     
     def __init__(self, x, y, width, height):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
+        self._x = x
+        self._y = y
+        self._width = width
+        self._height = height
+
+    @property
+    def x(self):
+        return self._x
+
+    @x.setter
+    def x(self, value):
+        self._x = value
+
+    @property
+    def y(self):
+        return self._y
+
+    @y.setter
+    def y(self, value):
+        self._y = value
+
+    @property
+    def width(self):
+        return self._width
+
+    @width.setter
+    def width(self, value):
+        self._width = value
+
+    @property
+    def height(self):
+        return self._height
+
+    @height.setter
+    def height(self, value):
+        self._height = value
 
     @abstractmethod
     def update(self, *args, **kwargs):
@@ -27,4 +59,4 @@ class GameObject(ABC):
 
     def get_rect(self):
         """충돌 감지용 Rect 반환"""
-        return pygame.Rect(self.x, self.y, self.width, self.height)
+        return pygame.Rect(self._x, self._y, self._width, self._height)
